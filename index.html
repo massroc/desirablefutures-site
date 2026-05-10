@@ -241,8 +241,9 @@
     return g;
   }
 
-  const matG     = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
-  // Two blue materials: spin arc fades out during settle, logo arc fades in.
+  // Four materials: fat spin arcs fade out during settle, brand-proportioned logo arcs fade in.
+  const matG     = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true, transparent: true });
+  const matGLogo = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true, transparent: true, opacity: 0 });
   const matBSpin = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true });
   const matBLogo = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true, opacity: 0 });
 
@@ -263,8 +264,12 @@
   pivotB.add(grpBSpin);
   scene.add(pivotB);
 
-  // Blue logo arc: final inner-ring proportions, already at rest position, invisible until settle.
+  // Logo arcs: brand-correct proportions (tube=0.18 outer / 0.15 inner → gap=0.13).
+  // Invisible until settle cross-fade; positioned at final resting angle from the start.
   const FINAL_Z = -Math.PI / 3;
+  const grpGLogo = makeArc(0.90, 0.18, 20, 72, matGLogo);
+  grpGLogo.rotation.z = FINAL_Z;
+  scene.add(grpGLogo);
   const grpBLogo = makeArc(0.44, 0.15, 14, 55, matBLogo);
   grpBLogo.rotation.z = FINAL_Z;
   scene.add(grpBLogo);
@@ -311,15 +316,17 @@
       pivotB.rotation.y = lerp(sBY, bYTarget, e);
       pivotB.rotation.z = lerp(0, FINAL_Z, e);
 
-      // Cross-fade: spin arc out → logo arc in
+      // Cross-fade: fat spin arcs out → brand-proportioned logo arcs in
+      matG.opacity     = 1 - e;
+      matGLogo.opacity = e;
       matBSpin.opacity = 1 - e;
       matBLogo.opacity = e;
 
       if (s >= 1.0) {
         grpG.rotation.set(0, 0, FINAL_Z);
         pivotB.rotation.set(0, 0, FINAL_Z);
-        matBSpin.opacity = 0;
-        matBLogo.opacity = 1;
+        matG.opacity = 0; matGLogo.opacity = 1;
+        matBSpin.opacity = 0; matBLogo.opacity = 1;
         done = true;
       }
     }
