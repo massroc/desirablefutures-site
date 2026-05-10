@@ -252,8 +252,13 @@
 
   // Blue spin arc: same size as green so they appear equal during the interlocked spin.
   // Pivot group separates world-Y spin from the inner X tilt (Euler order fix).
+  // position.x = -R shifts the arc left inside the pivot so its right endpoint sits
+  // at the world origin (centre of green's hole) while the arc body sweeps to the left.
+  // This keeps the arcs from intersecting (min clearance ~0.36) and gives the visual
+  // of blue going around the left side and threading through the centre of the green ring.
   const grpBSpin = makeArc(0.90, 0.18, 20, 72, matBSpin);
   grpBSpin.rotation.x = Math.PI / 2; // lay flat in XZ plane
+  grpBSpin.position.x = -0.90;       // right endpoint sits at origin; arc sweeps left
   const pivotB = new THREE.Group();
   pivotB.add(grpBSpin);
   scene.add(pivotB);
@@ -302,6 +307,7 @@
 
       grpG.rotation.z = lerp(sGZ, gTarget, e);
       grpBSpin.rotation.x = lerp(Math.PI / 2, 0, e);
+      grpBSpin.position.x = lerp(-0.90, 0, e); // slide spin arc to centre as it tilts
       pivotB.rotation.y = lerp(sBY, bYTarget, e);
       pivotB.rotation.z = lerp(0, FINAL_Z, e);
 
