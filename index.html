@@ -15,15 +15,19 @@
 
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a href="/" class="nav-logo"><img src="/img/df-logo.svg" alt="Desirable Futures"></a>
+    <a href="/" class="nav-logo">
+      Desirable Futures
+      <img src="/img/df-symbol.svg" alt="" aria-hidden="true">
+    </a>
     <ul class="nav-links">
       <li class="nav-dropdown">
-        <a href="#" class="nav-link">About ▾</a>
+        <a href="#" class="nav-link">About Us ▾</a>
         <div class="nav-dropdown-menu">
           <a href="/about-us-our-story/" class="nav-dropdown-item">Our Story</a>
           <a href="/about-us-the-team/" class="nav-dropdown-item">The Team</a>
         </div>
       </li>
+      <li><a href="/our-approach/" class="nav-link">Our Approach</a></li>
       <li class="nav-dropdown">
         <a href="#" class="nav-link">Services ▾</a>
         <div class="nav-dropdown-menu">
@@ -33,7 +37,6 @@
           <a href="/services-consulting/" class="nav-dropdown-item">Consulting</a>
         </div>
       </li>
-      <li><a href="/our-approach/" class="nav-link">Our Approach</a></li>
       <li><a href="/resources/" class="nav-link">Resources</a></li>
       <li><a href="/contact/" class="nav-link">Contact</a></li>
     </ul>
@@ -60,81 +63,90 @@
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-bg">
-    <div class="blob blob--blue"></div>
-    <div class="blob blob--teal"></div>
-    <div class="blob blob--teal"></div>
+  <div class="hero-canvas-wrap">
+    <canvas id="hero-canvas"></canvas>
   </div>
   <div class="container hero-content">
-    <h1>People and technology <em>together</em></h1>
-    <h2 style="font-size: 1.5rem; font-weight: 600; font-family: inherit; margin-bottom: 24px; color: var(--text-muted);">Building Organizations That Work for People</h2>
+    <h1>People and technology together</h1>
+    <p class="hero-sub" style="font-size:1.125rem;font-weight:600;color:var(--text);margin-bottom:16px;">Building Organizations That Work for People</p>
     <p class="hero-sub">Traditional organizational structures are getting in the way of what your people can achieve. We help you create workplaces where teams have the freedom and support they need to deliver great results.</p>
-    <p class="hero-sub" style="margin-top: 16px;">Drawing from proven approaches like those used by organizations such as Buurtzorg, Semco, and Haier, we work with you to design structures that put people first while still getting the outcomes your business needs. Whether you're just starting to think about change or ready to redesign how you work, we meet you where you are.</p>
-    <div class="btn-row" style="margin-top: 40px;">
-      <a href="/our-approach/" class="btn btn--primary">Learn More About Our Approach</a>
+    <p class="hero-sub" style="margin-top:12px;">Drawing from proven approaches like those used by organizations such as Buurtzorg, Semco, and Haier, we work with you to design structures that put people first.</p>
+  </div>
+</section>
+
+<!-- Building Orgs section -->
+<section style="border-top: 1px solid var(--border);">
+  <div class="container">
+    <div class="content-block">
+      <div>
+        <h2 style="margin-bottom:24px;">Building Organizations That Work for People</h2>
+        <p style="margin-bottom:16px;">Traditional organizational structures are getting in the way of what your people can achieve. We help you create workplaces where teams have the freedom and support they need to deliver great results.</p>
+        <p style="margin-bottom:32px;">Whether you're just starting to think about change or ready to redesign how you work, we meet you where you are.</p>
+        <a href="/our-approach/" class="btn btn--outline">Learn More About Our Approach</a>
+      </div>
+      <div>
+        <img src="/img/team-hamel.jpg" alt="Desirable Futures team with Prof Gary Hamel" style="border-radius:12px;width:100%;height:320px;object-fit:cover;">
+        <p style="margin-top:10px;font-size:0.8125rem;color:var(--text-subtle);text-align:center;">(pictured, the Desirable Futures team with Prof. Gary Hamel)</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Team photo -->
-<div style="border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-  <div class="container" style="padding-top: 64px; padding-bottom: 64px; text-align: center;">
-    <img src="/img/team-hamel.jpg" alt="Desirable Futures team with Prof Gary Hamel" style="max-width: 720px; width: 100%; margin: 0 auto; border-radius: 12px; display: block;">
-    <p style="margin-top: 16px; font-size: 0.875rem; color: var(--text-subtle); text-align: center;">(pictured, the Desirable Futures team with Prof. Gary Hamel)</p>
-  </div>
-</div>
-
 <!-- Key Insights -->
-<section>
+<section style="padding-top:0;">
   <div class="container">
     <span class="section-label">Key Insights</span>
-    <div class="stats-grid" style="margin-top: 32px;">
+    <div class="stats-grid" style="margin-top:24px;">
       <div class="stat-card">
-        <div class="stat-number"><em>$550</em> billion</div>
+        <div class="stat-number">$550 billion</div>
         <p class="stat-desc">Cost of restructuring organisations in the US between 2010 and 2019.</p>
         <p class="stat-source">Humanocracy (Hamel &amp; Zanini, 2020)</p>
       </div>
       <div class="stat-card">
-        <div class="stat-number"><em>77</em>%</div>
+        <div class="stat-number">77%</div>
         <p class="stat-desc">Employees are disengaged or actively disengaged</p>
         <p class="stat-source">Gallup 2023</p>
       </div>
       <div class="stat-card">
-        <div class="stat-number"><em>41</em>%</div>
+        <div class="stat-number">41%</div>
         <p class="stat-desc">People who say engagement and culture is the main reason they are considering quitting their job</p>
         <p class="stat-source">Gallup 2023</p>
       </div>
     </div>
-    <div style="text-align: center; margin-top: 48px;">
-      <a href="/resources/" class="btn btn--ghost">Learn More With Our Resources</a>
+    <div style="text-align:center;margin-top:40px;">
+      <a href="/resources/" class="btn btn--outline">Learn More With Our Resources</a>
     </div>
   </div>
 </section>
 
 <!-- Our Services -->
-<section style="padding-top: 0;">
+<section style="padding-top:0;">
   <div class="container">
     <span class="section-label">Our Services</span>
-    <p class="section-lead" style="margin-top: 16px;">Our consultancy offers tailored services to support change for organisations. From education and training to design and implementation we can help.</p>
+    <p class="lead" style="margin-top:12px;max-width:600px;">Our consultancy offers tailored services to support change for organisations. From education and training to design and implementation we can help.</p>
     <div class="services-grid">
       <div class="service-card">
+        <img src="/img/Icon01_Services.png" alt="" class="service-icon">
         <h3>Education and Training</h3>
-        <p>We've given talks at conferences all over the country and run scores of training courses. If you want to learn more about autonomous teams and scale we can teach you. If you'd like the tools to do it for yourself we can help.</p>
+        <p>We've given talks at conferences all over the country and run scores of training courses. If you want to learn more about autonomous teams and scale we can teach you.</p>
         <a href="/services-education-and-training/" class="service-link">Learn more →</a>
       </div>
       <div class="service-card">
+        <img src="/img/Icon02_Services.png" alt="" class="service-icon">
         <h3>Organisational Diagnosis</h3>
-        <p>If you'd like to know where you are on your journey and where you can focus your efforts we have a comprehensive set of tools to give you evidence-based insight. Leverage our deep knowledge to give yourself a path forward.</p>
+        <p>If you'd like to know where you are on your journey and where you can focus your efforts we have a comprehensive set of tools to give you evidence-based insight.</p>
         <a href="/services-org-diagnosis/" class="service-link">Learn more →</a>
       </div>
       <div class="service-card">
+        <img src="/img/Icon03_Services.png" alt="" class="service-icon">
         <h3>Facilitation</h3>
-        <p>We are master facilitators who have facilitated events for thousands of people over the years. Whether it is a board offsite, participative design or team kick-offs we have lots of engaging formats that create insight and outcomes.</p>
+        <p>We are master facilitators who have facilitated events for thousands of people over the years. Whether it is a board offsite, participative design or team kick-offs we have lots of engaging formats.</p>
         <a href="/services-facilitation/" class="service-link">Learn more →</a>
       </div>
       <div class="service-card">
+        <img src="/img/Icon04_Services.png" alt="" class="service-icon">
         <h3>Consulting</h3>
-        <p>If you need on-going assistance we can help. In particular we support leaders who are leading organisational change whether it's designing, implementing, or course-correction. We can help you avoid common mistakes and set yourself up for success.</p>
+        <p>If you need on-going assistance we can help. In particular we support leaders who are leading organisational change whether it's designing, implementing, or course-correction.</p>
         <a href="/services-consulting/" class="service-link">Learn more →</a>
       </div>
     </div>
@@ -144,17 +156,30 @@
 <!-- CTA -->
 <section class="cta-section">
   <div class="container">
-    <p class="lead" style="margin-bottom: 24px;">Connect with our crew and discover ways we can assist in accomplishing your strategic goals.</p>
+    <p>Connect with our crew and discover ways we can assist in accomplishing your strategic goals.</p>
     <a href="/contact/" class="btn btn--primary">Get in Touch</a>
   </div>
 </section>
 
-<!-- Footer -->
 <footer class="footer">
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="/img/df-logo.svg" alt="Desirable Futures">
+        <a href="/" class="nav-logo" style="margin-right:0;margin-bottom:16px;display:inline-flex;">
+          Desirable Futures
+          <img src="/img/df-symbol.svg" alt="" aria-hidden="true">
+        </a>
+        <div class="footer-socials">
+          <a href="https://www.youtube.com/@DesirableFutures" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.75 15.5v-7l6.25 3.5-6.25 3.5z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/desirable-futures/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 110-4.14 2.07 2.07 0 010 4.14zm1.78 13.02H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/></svg>
+          </a>
+          <a href="https://x.com/DesirableFut" target="_blank" rel="noopener" aria-label="X (Twitter)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        </div>
       </div>
       <div class="footer-col">
         <h4>About Us</h4>
@@ -189,5 +214,52 @@
 </footer>
 
 <script src="/js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script>
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const wrap = canvas.parentElement;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0, 0, 6.5);
+
+  const geo1 = new THREE.TorusGeometry(1.5, 0.38, 14, 52);
+  const mat1 = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true, opacity: 0.9 });
+  const torus1 = new THREE.Mesh(geo1, mat1);
+
+  const geo2 = new THREE.TorusGeometry(1.5, 0.38, 14, 52);
+  const mat2 = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true, transparent: true, opacity: 0.9 });
+  const torus2 = new THREE.Mesh(geo2, mat2);
+  torus2.rotation.x = Math.PI / 2;
+
+  scene.add(torus1, torus2);
+
+  function resize() {
+    const w = wrap.clientWidth;
+    const h = wrap.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.005;
+    torus1.rotation.x = t * 0.5;
+    torus1.rotation.y = t;
+    torus2.rotation.y = t * 0.5;
+    torus2.rotation.z = t;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
 </body>
 </html>
