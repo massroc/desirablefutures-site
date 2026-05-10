@@ -229,29 +229,23 @@
   camera.lookAt(0, 0.1, 0);
 
   // Build a half-circle arc with rounded end caps (hemisphere at each tip).
-  // Without caps, Three.js partial torus shows a flat open ring at each tip.
-  // The DF logo has pill-shaped rounded ends — these caps replicate that.
+  // The C-shape arc (0→π CCW) has both tube openings facing -Y.
+  // Lower hemisphere (thetaStart=π/2, thetaLength=π/2): flat face at Y=0, dome at -Y.
+  // Placed at each tip with no rotation → flat face aligns with tube opening.
   function makeArc(R, tube, radial, tubular, color) {
     const g = new THREE.Group();
     const mat = new THREE.MeshBasicMaterial({ color, wireframe: true });
 
-    // Half-circle torus (180°)
     g.add(new THREE.Mesh(new THREE.TorusGeometry(R, tube, radial, tubular, Math.PI), mat));
 
-    // At arc start (angle=0) tube center is at (R,0,0); arc tangent goes +Y → cap dome faces −Y
     const capH = Math.ceil(radial * 0.55);
-    const sA = new THREE.Mesh(
-      new THREE.SphereGeometry(tube, radial, capH, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2),
-      mat
-    );
+    const capGeo = new THREE.SphereGeometry(tube, radial, capH, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+
+    const sA = new THREE.Mesh(capGeo, mat);
     sA.position.set(R, 0, 0);
     g.add(sA);
 
-    // At arc end (angle=π) tube center is at (−R,0,0); arc tangent goes −Y → cap dome faces +Y
-    const sB = new THREE.Mesh(
-      new THREE.SphereGeometry(tube, radial, capH, 0, Math.PI * 2, 0, Math.PI / 2),
-      mat
-    );
+    const sB = new THREE.Mesh(capGeo, mat);
     sB.position.set(-R, 0, 0);
     g.add(sB);
 
