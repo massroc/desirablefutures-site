@@ -256,10 +256,15 @@
   const grpG = makeArc(0.90, 0.18, 20, 72, 0x42D235);
   scene.add(grpG);
 
-  // Blue: inner arc. R=0.44, tube=0.15 → outer edge 0.59 → gap of 0.13 from green inner (0.72)
+  // Blue: inner arc in a pivot group.
+  // grpB.rotation.x = π/2 tilts the arc flat (into XZ plane) — permanent during spin.
+  // pivotB.rotation.y drives the world-Y spin independently of the tilt.
+  // Without this split, Euler XYZ mixes the two and the arc doesn't stay flat.
   const grpB = makeArc(0.44, 0.15, 14, 55, 0x0095FF);
-  grpB.rotation.x = Math.PI / 2;  // start horizontal in XZ plane
-  scene.add(grpB);
+  grpB.rotation.x = Math.PI / 2;
+  const pivotB = new THREE.Group();
+  pivotB.add(grpB);
+  scene.add(pivotB);
 
   const SPIN_DUR   = 4.5;
   const SETTLE_DUR = 2.5;
@@ -288,14 +293,12 @@
 
     if (t < SPIN_DUR) {
       grpG.rotation.z = G_SPEED * t;
-      grpB.rotation.x = Math.PI / 2;
-      grpB.rotation.y = B_SPEED * t;
-      grpB.rotation.z = 0;
+      pivotB.rotation.y = B_SPEED * t; // flat horizontal spin around world Y
     } else {
       if (!settling) {
         settling = true;
         sGZ = grpG.rotation.z;
-        sBY = grpB.rotation.y;
+        sBY = pivotB.rotation.y;
         gTarget  = nearestFwd(sGZ, FINAL_Z, Math.PI * 2);
         bYTarget = nearestFwd(sBY, 0, Math.PI * 2);
       }
@@ -303,13 +306,14 @@
       const e = easeOut(s);
 
       grpG.rotation.z = lerp(sGZ, gTarget, e);
-      grpB.rotation.x = lerp(Math.PI / 2, 0, e);
-      grpB.rotation.y = lerp(sBY, bYTarget, e);
-      grpB.rotation.z = lerp(0, FINAL_Z, e);
+      grpB.rotation.x = lerp(Math.PI / 2, 0, e); // tilt up from horizontal to vertical
+      pivotB.rotation.y = lerp(sBY, bYTarget, e); // spin settles
+      pivotB.rotation.z = lerp(0, FINAL_Z, e);    // rotate to final Z position
 
       if (s >= 1.0) {
         grpG.rotation.set(0, 0, FINAL_Z);
-        grpB.rotation.set(0, 0, FINAL_Z);
+        grpB.rotation.set(0, 0, 0);
+        pivotB.rotation.set(0, 0, FINAL_Z);
         done = true;
       }
     }
