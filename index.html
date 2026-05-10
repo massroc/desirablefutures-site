@@ -228,16 +228,16 @@
   camera.position.set(0, 0, 6.5);
   camera.lookAt(0, 0.1, 0);
 
-  // Green: 270° arc, outer ring — spins CCW in XY plane (faces viewer)
-  // tube=0.20 (22% of R) matches original. Inner edge = 0.70.
-  const geoG = new THREE.TorusGeometry(0.90, 0.20, 36, 120, Math.PI * 1.5);
+  // Green: half-circle (180°), outer ring — spins CCW in XY plane (faces viewer)
+  // tube=0.20 (22% of R). Inner edge = 0.70.
+  const geoG = new THREE.TorusGeometry(0.90, 0.20, 36, 120, Math.PI);
   const matG = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
   const arcG = new THREE.Mesh(geoG, matG);
   scene.add(arcG);
 
-  // Blue: 270° arc, inner ring — thick tube (46% of R), nearly touching green's inner edge.
-  // R=0.46 + tube=0.21 → outer edge 0.67, green inner edge 0.70 → tiny 0.03 gap.
-  const geoB = new THREE.TorusGeometry(0.46, 0.21, 32, 100, Math.PI * 1.5);
+  // Blue: half-circle (180°), inner ring — chunky tube, nearly touching green's inner edge.
+  // R=0.46 + tube=0.21 → outer edge 0.67, green inner = 0.70 → 0.03 gap.
+  const geoB = new THREE.TorusGeometry(0.46, 0.21, 32, 100, Math.PI);
   const matB = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
   const arcB = new THREE.Mesh(geoB, matB);
   arcB.rotation.x = Math.PI / 2;   // lay flat in XZ plane
@@ -246,8 +246,8 @@
   // Animation constants
   const SPIN_DUR   = 4.5;
   const SETTLE_DUR = 2.5;
-  // Final: gap at 7.5 o'clock (lower-left diagonal) — measured from image
-  const FINAL_Z = -Math.PI / 2;
+  // Final: with 180° arc, gap at 7 o'clock (lower-left) = -π/3 rotation
+  const FINAL_Z = -Math.PI / 3;
 
   // Green at 1 rad/s → t=4.5 gives rotation.z=4.5; nearest FINAL_Z+2πn = 5.236 (only 0.74 rad ahead)
   // Blue at exactly one revolution in 4.5s → lands at 0, settle distance ≈ 0
