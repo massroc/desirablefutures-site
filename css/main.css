@@ -276,7 +276,8 @@ section { padding: 96px 0; }
   max-width: 55%;
 }
 .hero h1 {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  font-weight: 300;
   background: var(--gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

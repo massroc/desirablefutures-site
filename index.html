@@ -68,9 +68,7 @@
   </div>
   <div class="container hero-content">
     <h1>People and technology together</h1>
-    <p class="hero-sub" style="font-size:1.125rem;font-weight:600;color:var(--text);margin-bottom:16px;">Building Organizations That Work for People</p>
-    <p class="hero-sub">Traditional organizational structures are getting in the way of what your people can achieve. We help you create workplaces where teams have the freedom and support they need to deliver great results.</p>
-    <p class="hero-sub" style="margin-top:12px;">Drawing from proven approaches like those used by organizations such as Buurtzorg, Semco, and Haier, we work with you to design structures that put people first.</p>
+    <p class="hero-sub" style="color: var(--text); font-weight: 400;">Building Organizations That Work for People</p>
   </div>
 </section>
 
@@ -225,18 +223,23 @@
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0, 6.5);
+  camera.position.set(0, 0, 6);
 
-  const geo1 = new THREE.TorusGeometry(1.5, 0.38, 14, 52);
-  const mat1 = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true, opacity: 0.9 });
-  const torus1 = new THREE.Mesh(geo1, mat1);
+  // Green outer half-torus — dense segments make it appear solid/filled
+  const geo1 = new THREE.TorusGeometry(1.5, 0.52, 40, 110, Math.PI);
+  const mat1 = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
+  const arc1 = new THREE.Mesh(geo1, mat1);
 
-  const geo2 = new THREE.TorusGeometry(1.5, 0.38, 14, 52);
-  const mat2 = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true, transparent: true, opacity: 0.9 });
-  const torus2 = new THREE.Mesh(geo2, mat2);
-  torus2.rotation.x = Math.PI / 2;
+  // Blue inner half-torus — smaller, nested inside the green
+  const geo2 = new THREE.TorusGeometry(0.82, 0.38, 40, 110, Math.PI);
+  const mat2 = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
+  const arc2 = new THREE.Mesh(geo2, mat2);
 
-  scene.add(torus1, torus2);
+  // Start oriented like the DF symbol — C-shapes visible from the front
+  arc1.rotation.z = Math.PI * 0.6;
+  arc2.rotation.z = Math.PI * 0.6;
+
+  scene.add(arc1, arc2);
 
   function resize() {
     const w = wrap.clientWidth;
@@ -251,11 +254,13 @@
   let t = 0;
   function animate() {
     requestAnimationFrame(animate);
-    t += 0.005;
-    torus1.rotation.x = t * 0.5;
-    torus1.rotation.y = t;
-    torus2.rotation.y = t * 0.5;
-    torus2.rotation.z = t;
+    t += 0.003;
+    arc1.rotation.x = Math.sin(t * 0.4) * 0.6;
+    arc1.rotation.y = t * 0.4;
+    arc1.rotation.z = Math.PI * 0.6 + Math.sin(t * 0.25) * 0.2;
+    arc2.rotation.x = Math.sin(t * 0.35 + 0.5) * 0.5;
+    arc2.rotation.y = t * 0.35;
+    arc2.rotation.z = Math.PI * 0.6 + Math.sin(t * 0.3 + 1) * 0.2;
     renderer.render(scene, camera);
   }
   animate();
