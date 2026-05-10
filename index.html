@@ -228,29 +228,50 @@
   camera.position.set(0, 0, 6.5);
   camera.lookAt(0, 0.1, 0);
 
-  // Green: half-circle (180°), outer ring — spins CCW in XY plane (faces viewer)
-  // tube=0.20 (22% of R). Inner edge = 0.70.
-  const geoG = new THREE.TorusGeometry(0.90, 0.20, 36, 120, Math.PI);
-  const matG = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
-  const arcG = new THREE.Mesh(geoG, matG);
-  scene.add(arcG);
+  // Build a half-circle arc with rounded end caps (hemisphere at each tip).
+  // Without caps, Three.js partial torus shows a flat open ring at each tip.
+  // The DF logo has pill-shaped rounded ends — these caps replicate that.
+  function makeArc(R, tube, radial, tubular, color) {
+    const g = new THREE.Group();
+    const mat = new THREE.MeshBasicMaterial({ color, wireframe: true });
 
-  // Blue: half-circle (180°), inner ring — chunky tube, nearly touching green's inner edge.
-  // R=0.46 + tube=0.21 → outer edge 0.67, green inner = 0.70 → 0.03 gap.
-  const geoB = new THREE.TorusGeometry(0.46, 0.21, 32, 100, Math.PI);
-  const matB = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
-  const arcB = new THREE.Mesh(geoB, matB);
-  arcB.rotation.x = Math.PI / 2;   // lay flat in XZ plane
-  scene.add(arcB);
+    // Half-circle torus (180°)
+    g.add(new THREE.Mesh(new THREE.TorusGeometry(R, tube, radial, tubular, Math.PI), mat));
 
-  // Animation constants
+    // At arc start (angle=0) tube center is at (R,0,0); arc tangent goes +Y → cap dome faces −Y
+    const capH = Math.ceil(radial * 0.55);
+    const sA = new THREE.Mesh(
+      new THREE.SphereGeometry(tube, radial, capH, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2),
+      mat
+    );
+    sA.position.set(R, 0, 0);
+    g.add(sA);
+
+    // At arc end (angle=π) tube center is at (−R,0,0); arc tangent goes −Y → cap dome faces +Y
+    const sB = new THREE.Mesh(
+      new THREE.SphereGeometry(tube, radial, capH, 0, Math.PI * 2, 0, Math.PI / 2),
+      mat
+    );
+    sB.position.set(-R, 0, 0);
+    g.add(sB);
+
+    return g;
+  }
+
+  // Green: outer arc. R=0.90, tube=0.18 → inner edge at 0.72
+  const grpG = makeArc(0.90, 0.18, 20, 72, 0x42D235);
+  scene.add(grpG);
+
+  // Blue: inner arc. R=0.44, tube=0.15 → outer edge 0.59 → gap of 0.13 from green inner (0.72)
+  const grpB = makeArc(0.44, 0.15, 14, 55, 0x0095FF);
+  grpB.rotation.x = Math.PI / 2;  // start horizontal in XZ plane
+  scene.add(grpB);
+
   const SPIN_DUR   = 4.5;
   const SETTLE_DUR = 2.5;
-  // Final: with 180° arc, gap at 7 o'clock (lower-left) = -π/3 rotation
+  // 180° arc: default gap at 6 o'clock; −π/3 rotation puts gap at ~7.5 o'clock (lower-left)
   const FINAL_Z = -Math.PI / 3;
 
-  // Green at 1 rad/s → t=4.5 gives rotation.z=4.5; nearest FINAL_Z+2πn = 5.236 (only 0.74 rad ahead)
-  // Blue at exactly one revolution in 4.5s → lands at 0, settle distance ≈ 0
   const G_SPEED = 1.0;
   const B_SPEED = (2 * Math.PI) / SPIN_DUR;
 
@@ -259,7 +280,6 @@
 
   function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
   function lerp(a, b, t) { return a + (b - a) * t; }
-  // Returns the nearest value ≥ current that is congruent to target mod period
   function nearestFwd(current, target, period) {
     const diff = ((current - target) % period + period) % period;
     return current + (period - diff) % period;
@@ -270,40 +290,35 @@
     requestAnimationFrame(animate);
     if (!startTime) startTime = ts;
     const t = (ts - startTime) / 1000;
-
     if (done) { renderer.render(scene, camera); return; }
 
     if (t < SPIN_DUR) {
-      // Phase 1: green rotates in XY plane (CCW = +z); blue rotates in XZ plane (CCW from above = +y)
-      arcG.rotation.z = G_SPEED * t;
-      arcB.rotation.x = Math.PI / 2;
-      arcB.rotation.y = B_SPEED * t;
-      arcB.rotation.z = 0;
-
+      grpG.rotation.z = G_SPEED * t;
+      grpB.rotation.x = Math.PI / 2;
+      grpB.rotation.y = B_SPEED * t;
+      grpB.rotation.z = 0;
     } else {
-      // Phase 2: ease both into the DF logo shape
       if (!settling) {
         settling = true;
-        sGZ = arcG.rotation.z;
-        sBY = arcB.rotation.y;
+        sGZ = grpG.rotation.z;
+        sBY = grpB.rotation.y;
         gTarget  = nearestFwd(sGZ, FINAL_Z, Math.PI * 2);
         bYTarget = nearestFwd(sBY, 0, Math.PI * 2);
       }
       const s = Math.min((t - SPIN_DUR) / SETTLE_DUR, 1.0);
       const e = easeOut(s);
 
-      arcG.rotation.z = lerp(sGZ, gTarget, e);
-      arcB.rotation.x = lerp(Math.PI / 2, 0, e);      // tilt from horizontal to face viewer
-      arcB.rotation.y = lerp(sBY, bYTarget, e);
-      arcB.rotation.z = lerp(0, FINAL_Z, e);           // rotate to same ) opening as green
+      grpG.rotation.z = lerp(sGZ, gTarget, e);
+      grpB.rotation.x = lerp(Math.PI / 2, 0, e);
+      grpB.rotation.y = lerp(sBY, bYTarget, e);
+      grpB.rotation.z = lerp(0, FINAL_Z, e);
 
       if (s >= 1.0) {
-        arcG.rotation.set(0, 0, FINAL_Z);
-        arcB.rotation.set(0, 0, FINAL_Z);
+        grpG.rotation.set(0, 0, FINAL_Z);
+        grpB.rotation.set(0, 0, FINAL_Z);
         done = true;
       }
     }
-
     renderer.render(scene, camera);
   }
 
