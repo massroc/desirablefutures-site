@@ -226,32 +226,30 @@
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
   camera.position.set(0, 0, 6.5);
-  camera.lookAt(0, 0.28, 0);
+  camera.lookAt(0, 0.1, 0);
 
-  // Green: half-torus in XY plane (faces viewer), spins CCW around Z axis
-  // R=0.80 is ~50% smaller than the previous 1.5
-  const geoG = new THREE.TorusGeometry(0.80, 0.17, 36, 90, Math.PI);
+  // Green: 270° arc (¾ circle), thick tube — spins CCW in XY plane (faces viewer)
+  const geoG = new THREE.TorusGeometry(0.90, 0.42, 44, 110, Math.PI * 1.5);
   const matG = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
   const arcG = new THREE.Mesh(geoG, matG);
   scene.add(arcG);
 
-  // Blue: half-torus starts in horizontal (XZ) plane, spins CCW around Y axis
-  // Passes through the centre hole of the green arc
-  const geoB = new THREE.TorusGeometry(0.38, 0.17, 36, 90, Math.PI);
+  // Blue: 270° arc, thinner tube — starts horizontal (XZ plane), spins CCW around Y axis
+  // Nestled inside the green arc in the final logo position
+  const geoB = new THREE.TorusGeometry(0.34, 0.16, 36, 90, Math.PI * 1.5);
   const matB = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
   const arcB = new THREE.Mesh(geoB, matB);
   arcB.rotation.x = Math.PI / 2;   // lay flat in XZ plane
   scene.add(arcB);
 
   // Animation constants
-  const SPIN_DUR   = 4.5;   // seconds of free spinning
-  const SETTLE_DUR = 2.5;   // seconds of easing into logo
-  // Final rotation: both arcs as ) shapes (opening left), green outer + blue inner
-  const FINAL_Z = -Math.PI / 2;
+  const SPIN_DUR   = 4.5;
+  const SETTLE_DUR = 2.5;
+  // Final: gap opens at ~7-8 o'clock (lower-left), matching the DF logo shape
+  const FINAL_Z = -Math.PI / 3;
 
-  // Green spins at 1 rad/s CCW → at t=4.5 it's at 4.5 rad, which is just
-  // 0.21 rad short of 4.712 (= 3π/2 = FINAL_Z mod 2π), so the settle is tiny.
-  // Blue spins exactly one revolution in 4.5 s → lands back at 0, settle is zero.
+  // Green at 1 rad/s → t=4.5 gives rotation.z=4.5; nearest FINAL_Z+2πn = 5.236 (only 0.74 rad ahead)
+  // Blue at exactly one revolution in 4.5s → lands at 0, settle distance ≈ 0
   const G_SPEED = 1.0;
   const B_SPEED = (2 * Math.PI) / SPIN_DUR;
 
