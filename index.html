@@ -228,49 +228,44 @@
   camera.position.set(0, 0, 6.5);
   camera.lookAt(0, 0.1, 0);
 
-  // Build a half-circle arc with rounded end caps (hemisphere at each tip).
-  // The C-shape arc (0→π CCW) has both tube openings facing -Y.
-  // Lower hemisphere (thetaStart=π/2, thetaLength=π/2): flat face at Y=0, dome at -Y.
-  // Placed at each tip with no rotation → flat face aligns with tube opening.
-  function makeArc(R, tube, radial, tubular, color) {
+  // makeArc takes a pre-built material so callers can share/control opacity.
+  // Lower hemisphere caps (thetaStart=π/2): flat face at Y=0, dome at −Y —
+  // both tube openings on the C-shape face −Y, so no rotation needed on caps.
+  function makeArc(R, tube, radial, tubular, mat) {
     const g = new THREE.Group();
-    const mat = new THREE.MeshBasicMaterial({ color, wireframe: true });
-
     g.add(new THREE.Mesh(new THREE.TorusGeometry(R, tube, radial, tubular, Math.PI), mat));
-
     const capH = Math.ceil(radial * 0.55);
     const capGeo = new THREE.SphereGeometry(tube, radial, capH, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
-
-    const sA = new THREE.Mesh(capGeo, mat);
-    sA.position.set(R, 0, 0);
-    g.add(sA);
-
-    const sB = new THREE.Mesh(capGeo, mat);
-    sB.position.set(-R, 0, 0);
-    g.add(sB);
-
+    const sA = new THREE.Mesh(capGeo, mat); sA.position.set(R, 0, 0);  g.add(sA);
+    const sB = new THREE.Mesh(capGeo, mat); sB.position.set(-R, 0, 0); g.add(sB);
     return g;
   }
 
-  // Green: outer arc. R=0.90, tube=0.18 → inner edge at 0.72
-  const grpG = makeArc(0.90, 0.18, 20, 72, 0x42D235);
+  const matG     = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
+  // Two blue materials: spin arc fades out during settle, logo arc fades in.
+  const matBSpin = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true });
+  const matBLogo = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true, opacity: 0 });
+
+  // Green outer arc
+  const grpG = makeArc(0.90, 0.18, 20, 72, matG);
   scene.add(grpG);
 
-  // Blue: inner arc in a pivot group.
-  // grpB.rotation.x = π/2 tilts the arc flat (into XZ plane) — permanent during spin.
-  // pivotB.rotation.y drives the world-Y spin independently of the tilt.
-  // Without this split, Euler XYZ mixes the two and the arc doesn't stay flat.
-  const grpB = makeArc(0.44, 0.15, 14, 55, 0x0095FF);
-  grpB.rotation.x = Math.PI / 2;
+  // Blue spin arc: same size as green so they appear equal during the interlocked spin.
+  // Pivot group separates world-Y spin from the inner X tilt (Euler order fix).
+  const grpBSpin = makeArc(0.90, 0.18, 20, 72, matBSpin);
+  grpBSpin.rotation.x = Math.PI / 2; // lay flat in XZ plane
   const pivotB = new THREE.Group();
-  pivotB.add(grpB);
+  pivotB.add(grpBSpin);
   scene.add(pivotB);
+
+  // Blue logo arc: final inner-ring proportions, already at rest position, invisible until settle.
+  const FINAL_Z = -Math.PI / 3;
+  const grpBLogo = makeArc(0.44, 0.15, 14, 55, matBLogo);
+  grpBLogo.rotation.z = FINAL_Z;
+  scene.add(grpBLogo);
 
   const SPIN_DUR   = 4.5;
   const SETTLE_DUR = 2.5;
-  // 180° arc: default gap at 6 o'clock; −π/3 rotation puts gap at ~7.5 o'clock (lower-left)
-  const FINAL_Z = -Math.PI / 3;
-
   const G_SPEED = 1.0;
   const B_SPEED = (2 * Math.PI) / SPIN_DUR;
 
@@ -293,7 +288,7 @@
 
     if (t < SPIN_DUR) {
       grpG.rotation.z = G_SPEED * t;
-      pivotB.rotation.y = B_SPEED * t; // flat horizontal spin around world Y
+      pivotB.rotation.y = B_SPEED * t;
     } else {
       if (!settling) {
         settling = true;
@@ -306,14 +301,19 @@
       const e = easeOut(s);
 
       grpG.rotation.z = lerp(sGZ, gTarget, e);
-      grpB.rotation.x = lerp(Math.PI / 2, 0, e); // tilt up from horizontal to vertical
-      pivotB.rotation.y = lerp(sBY, bYTarget, e); // spin settles
-      pivotB.rotation.z = lerp(0, FINAL_Z, e);    // rotate to final Z position
+      grpBSpin.rotation.x = lerp(Math.PI / 2, 0, e);
+      pivotB.rotation.y = lerp(sBY, bYTarget, e);
+      pivotB.rotation.z = lerp(0, FINAL_Z, e);
+
+      // Cross-fade: spin arc out → logo arc in
+      matBSpin.opacity = 1 - e;
+      matBLogo.opacity = e;
 
       if (s >= 1.0) {
         grpG.rotation.set(0, 0, FINAL_Z);
-        grpB.rotation.set(0, 0, 0);
         pivotB.rotation.set(0, 0, FINAL_Z);
+        matBSpin.opacity = 0;
+        matBLogo.opacity = 1;
         done = true;
       }
     }
