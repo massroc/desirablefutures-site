@@ -258,8 +258,8 @@
   // of blue going around the left side and threading through the centre of the green ring.
   const grpBSpin = makeArc(0.90, 0.18, 20, 72, matBSpin);
   grpBSpin.rotation.x = Math.PI / 2; // lay flat in XZ plane
-  grpBSpin.position.x = -0.90;       // right endpoint sits at origin; arc sweeps left
   const pivotB = new THREE.Group();
+  pivotB.position.x = -0.90; // pivot at left edge of green ring — arc spins around its own centre there
   pivotB.add(grpBSpin);
   scene.add(pivotB);
 
@@ -307,7 +307,7 @@
 
       grpG.rotation.z = lerp(sGZ, gTarget, e);
       grpBSpin.rotation.x = lerp(Math.PI / 2, 0, e);
-      grpBSpin.position.x = lerp(-0.90, 0, e); // slide spin arc to centre as it tilts
+      pivotB.position.x = lerp(-0.90, 0, e); // slide pivot to centre as arc tilts upright
       pivotB.rotation.y = lerp(sBY, bYTarget, e);
       pivotB.rotation.z = lerp(0, FINAL_Z, e);
 
