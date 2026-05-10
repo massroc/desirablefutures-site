@@ -269,9 +269,11 @@
   const FINAL_Z = -Math.PI / 3;
   const grpGLogo = makeArc(0.90, 0.18, 20, 72, matGLogo);
   grpGLogo.rotation.z = FINAL_Z;
+  grpGLogo.visible = false; // hidden until settle — opacity:0 alone still writes to depth buffer
   scene.add(grpGLogo);
   const grpBLogo = makeArc(0.44, 0.15, 14, 55, matBLogo);
   grpBLogo.rotation.z = FINAL_Z;
+  grpBLogo.visible = false;
   scene.add(grpBLogo);
 
   const SPIN_DUR   = 4.5;
@@ -302,6 +304,8 @@
     } else {
       if (!settling) {
         settling = true;
+        grpGLogo.visible = true;
+        grpBLogo.visible = true;
         sGZ = grpG.rotation.z;
         sBY = pivotB.rotation.y;
         gTarget  = nearestFwd(sGZ, FINAL_Z, Math.PI * 2);
