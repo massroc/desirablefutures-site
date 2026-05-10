@@ -228,15 +228,16 @@
   camera.position.set(0, 0, 6.5);
   camera.lookAt(0, 0.1, 0);
 
-  // Green: 270° arc (¾ circle), thick tube — spins CCW in XY plane (faces viewer)
-  const geoG = new THREE.TorusGeometry(0.90, 0.42, 44, 110, Math.PI * 1.5);
+  // Green: 270° arc, outer ring — spins CCW in XY plane (faces viewer)
+  // tube=0.13 keeps it refined; inner edge at 0.77 gives room for blue
+  const geoG = new THREE.TorusGeometry(0.90, 0.13, 36, 120, Math.PI * 1.5);
   const matG = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
   const arcG = new THREE.Mesh(geoG, matG);
   scene.add(arcG);
 
-  // Blue: 270° arc, thinner tube — starts horizontal (XZ plane), spins CCW around Y axis
-  // Nestled inside the green arc in the final logo position
-  const geoB = new THREE.TorusGeometry(0.34, 0.16, 36, 90, Math.PI * 1.5);
+  // Blue: 270° arc, inner ring — starts horizontal (XZ plane), spins CCW around Y axis
+  // R=0.60 + tube=0.11 → outer edge 0.71, sits inside green's inner edge (0.77)
+  const geoB = new THREE.TorusGeometry(0.60, 0.11, 32, 100, Math.PI * 1.5);
   const matB = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
   const arcB = new THREE.Mesh(geoB, matB);
   arcB.rotation.x = Math.PI / 2;   // lay flat in XZ plane
