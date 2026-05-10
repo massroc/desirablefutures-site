@@ -247,7 +247,7 @@
   const matBLogo = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true, transparent: true, opacity: 0 });
 
   // Green outer arc
-  const grpG = makeArc(0.90, 0.18, 20, 72, matG);
+  const grpG = makeArc(0.90, 0.26, 20, 72, matG);
   scene.add(grpG);
 
   // Blue spin arc: same size as green so they appear equal during the interlocked spin.
@@ -256,7 +256,7 @@
   // at the world origin (centre of green's hole) while the arc body sweeps to the left.
   // This keeps the arcs from intersecting (min clearance ~0.36) and gives the visual
   // of blue going around the left side and threading through the centre of the green ring.
-  const grpBSpin = makeArc(0.90, 0.18, 20, 72, matBSpin);
+  const grpBSpin = makeArc(0.90, 0.26, 20, 72, matBSpin);
   grpBSpin.rotation.x = Math.PI / 2; // lay flat in XZ plane
   const pivotB = new THREE.Group();
   pivotB.position.x = -0.90; // pivot at left edge of green ring — arc spins around its own centre there
@@ -265,7 +265,8 @@
 
   // Blue logo arc: final inner-ring proportions, already at rest position, invisible until settle.
   const FINAL_Z = -Math.PI / 3;
-  const grpBLogo = makeArc(0.44, 0.15, 14, 55, matBLogo);
+  // R=0.36, tube=0.20: outer edge 0.56, gap from green inner (0.64) = 0.08
+  const grpBLogo = makeArc(0.36, 0.20, 14, 55, matBLogo);
   grpBLogo.rotation.z = FINAL_Z;
   scene.add(grpBLogo);
 
