@@ -63,12 +63,14 @@
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-canvas-wrap">
-    <canvas id="hero-canvas"></canvas>
-  </div>
-  <div class="container hero-content">
-    <h1>People and technology together</h1>
-    <p class="hero-sub" style="color: var(--text); font-weight: 400;">Building Organizations That Work for People</p>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>People and technology together</h1>
+      <p class="hero-sub">Building Organizations That Work for People</p>
+    </div>
+    <div class="hero-canvas-wrap">
+      <canvas id="hero-canvas"></canvas>
+    </div>
   </div>
 </section>
 
@@ -223,47 +225,98 @@
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0, 6);
+  camera.position.set(0, 0, 6.5);
+  camera.lookAt(0, 0.28, 0);
 
-  // Green outer half-torus — dense segments make it appear solid/filled
-  const geo1 = new THREE.TorusGeometry(1.5, 0.52, 40, 110, Math.PI);
-  const mat1 = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
-  const arc1 = new THREE.Mesh(geo1, mat1);
+  // Green: half-torus in XY plane (faces viewer), spins CCW around Z axis
+  // R=0.80 is ~50% smaller than the previous 1.5
+  const geoG = new THREE.TorusGeometry(0.80, 0.17, 36, 90, Math.PI);
+  const matG = new THREE.MeshBasicMaterial({ color: 0x42D235, wireframe: true });
+  const arcG = new THREE.Mesh(geoG, matG);
+  scene.add(arcG);
 
-  // Blue inner half-torus — smaller, nested inside the green
-  const geo2 = new THREE.TorusGeometry(0.82, 0.38, 40, 110, Math.PI);
-  const mat2 = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
-  const arc2 = new THREE.Mesh(geo2, mat2);
+  // Blue: half-torus starts in horizontal (XZ) plane, spins CCW around Y axis
+  // Passes through the centre hole of the green arc
+  const geoB = new THREE.TorusGeometry(0.38, 0.17, 36, 90, Math.PI);
+  const matB = new THREE.MeshBasicMaterial({ color: 0x0095FF, wireframe: true });
+  const arcB = new THREE.Mesh(geoB, matB);
+  arcB.rotation.x = Math.PI / 2;   // lay flat in XZ plane
+  scene.add(arcB);
 
-  // Start oriented like the DF symbol — C-shapes visible from the front
-  arc1.rotation.z = Math.PI * 0.6;
-  arc2.rotation.z = Math.PI * 0.6;
+  // Animation constants
+  const SPIN_DUR   = 4.5;   // seconds of free spinning
+  const SETTLE_DUR = 2.5;   // seconds of easing into logo
+  // Final rotation: both arcs as ) shapes (opening left), green outer + blue inner
+  const FINAL_Z = -Math.PI / 2;
 
-  scene.add(arc1, arc2);
+  // Green spins at 1 rad/s CCW → at t=4.5 it's at 4.5 rad, which is just
+  // 0.21 rad short of 4.712 (= 3π/2 = FINAL_Z mod 2π), so the settle is tiny.
+  // Blue spins exactly one revolution in 4.5 s → lands back at 0, settle is zero.
+  const G_SPEED = 1.0;
+  const B_SPEED = (2 * Math.PI) / SPIN_DUR;
+
+  let settling = false, done = false;
+  let sGZ, sBY, gTarget, bYTarget;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  // Returns the nearest value ≥ current that is congruent to target mod period
+  function nearestFwd(current, target, period) {
+    const diff = ((current - target) % period + period) % period;
+    return current + (period - diff) % period;
+  }
+
+  let startTime = null;
+  function animate(ts) {
+    requestAnimationFrame(animate);
+    if (!startTime) startTime = ts;
+    const t = (ts - startTime) / 1000;
+
+    if (done) { renderer.render(scene, camera); return; }
+
+    if (t < SPIN_DUR) {
+      // Phase 1: green rotates in XY plane (CCW = +z); blue rotates in XZ plane (CCW from above = +y)
+      arcG.rotation.z = G_SPEED * t;
+      arcB.rotation.x = Math.PI / 2;
+      arcB.rotation.y = B_SPEED * t;
+      arcB.rotation.z = 0;
+
+    } else {
+      // Phase 2: ease both into the DF logo shape
+      if (!settling) {
+        settling = true;
+        sGZ = arcG.rotation.z;
+        sBY = arcB.rotation.y;
+        gTarget  = nearestFwd(sGZ, FINAL_Z, Math.PI * 2);
+        bYTarget = nearestFwd(sBY, 0, Math.PI * 2);
+      }
+      const s = Math.min((t - SPIN_DUR) / SETTLE_DUR, 1.0);
+      const e = easeOut(s);
+
+      arcG.rotation.z = lerp(sGZ, gTarget, e);
+      arcB.rotation.x = lerp(Math.PI / 2, 0, e);      // tilt from horizontal to face viewer
+      arcB.rotation.y = lerp(sBY, bYTarget, e);
+      arcB.rotation.z = lerp(0, FINAL_Z, e);           // rotate to same ) opening as green
+
+      if (s >= 1.0) {
+        arcG.rotation.set(0, 0, FINAL_Z);
+        arcB.rotation.set(0, 0, FINAL_Z);
+        done = true;
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
 
   function resize() {
-    const w = wrap.clientWidth;
-    const h = wrap.clientHeight;
+    const w = wrap.clientWidth, h = wrap.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
   resize();
   window.addEventListener('resize', resize);
-
-  let t = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    t += 0.003;
-    arc1.rotation.x = Math.sin(t * 0.4) * 0.6;
-    arc1.rotation.y = t * 0.4;
-    arc1.rotation.z = Math.PI * 0.6 + Math.sin(t * 0.25) * 0.2;
-    arc2.rotation.x = Math.sin(t * 0.35 + 0.5) * 0.5;
-    arc2.rotation.y = t * 0.35;
-    arc2.rotation.z = Math.PI * 0.6 + Math.sin(t * 0.3 + 1) * 0.2;
-    renderer.render(scene, camera);
-  }
-  animate();
+  requestAnimationFrame(animate);
 })();
 </script>
 </body>
